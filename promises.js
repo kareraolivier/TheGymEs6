@@ -16,30 +16,57 @@
 
 // let fetch data....................................
 
-function getData(method, url) {
+// function getData(method, url) {
+//   return new Promise(function (resolve, reject) {
+//     let xhr = new XMLHttpRequest();
+//     xhr.open(method, url);
+//     xhr.onload = function () {
+//       if (this.status >= 200 && this.status < 300) {
+//         resolve(xhr.response);
+//       } else {
+//         reject({
+//           status: this.status,
+//           statusText: xhr.statusText,
+//         });
+//       }
+//     };
+//     xhr.onerror = function () {
+//       reject({
+//         status: this.status,
+//         statusText: xhr.statusText,
+//       });
+//     };
+//     xhr.send();
+//   });
+// }
+// getData("GET", "https://jsonplaceholder.typicode.com/todos")
+//   .then((res) => console.log(res))
+//   .catch((err) => console.log("your error", err))
+//   .then(() => console.log("ok"))
+//   .catch(() => console.log("Error in the finally block"));
+
+const http = require("http");
+
+function getData(url) {
   return new Promise(function (resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.open(method, url);
-    xhr.onload = function () {
-      if (this.status >= 200 && this.status < 300) {
-        resolve(xhr.response);
-      } else {
-        reject({
-          status: this.status,
-          statusText: xhr.statusText,
+    http
+      .get(url, (res) => {
+        let data = "";
+        res.on("data", (chunk) => {
+          data += chunk;
+          console.log(chunk);
         });
-      }
-    };
-    xhr.onerror = function () {
-      reject({
-        status: this.status,
-        statusText: xhr.statusText,
+        res.on("end", () => {
+          resolve(data);
+        });
+      })
+      .on("error", (err) => {
+        reject(err);
       });
-    };
-    xhr.send();
   });
 }
-getData("GET", "https://jsonplaceholder.typicode.com/todos")
+
+getData("http://jsonplaceholder.typicode.com/todos")
   .then((res) => console.log(res))
   .catch((err) => console.log("your error", err))
   .then(() => console.log("ok"))
